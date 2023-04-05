@@ -1,8 +1,10 @@
-import { default as express } from "express";
-import { default as cors } from "cors";
-import { config } from "./configs/config.js";
-import * as connect from "./db/mongoose.js";
-class ChatServiceApp {
+const express = require("express");
+const cors = require("cors");
+const config = require("./configs/config");
+const userRouter = require("./routes/user");
+const docRouter = require("./routes/docter");
+require("./db/mongoose");
+class AppointmentBookingSystem {
   port;
   app;
 
@@ -36,6 +38,8 @@ class ChatServiceApp {
   }
 
   initializeRoutes() {
+    this.app.use("/v1", userRouter);
+    this.app.use("/v1", docRouter);
     this.app.use("/", (req, res, next) => {
       res
         .status(200)
@@ -53,4 +57,4 @@ class ChatServiceApp {
   }
 }
 
-new ChatServiceApp(parseInt(config.SERVICE_PORT)).StartApp();
+new AppointmentBookingSystem(parseInt(config.SERVICE_PORT)).StartApp();

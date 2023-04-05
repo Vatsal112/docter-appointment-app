@@ -11,6 +11,29 @@ const docterSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    email: {
+      type: String,
+      trim: true,
+      unique: true,
+      required: true,
+      lowercase: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Email is invalid");
+        }
+      },
+    },
+    password: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 7,
+      validate(value) {
+        if (value.toLowerCase().includes("password")) {
+          throw new Error('Password cannot be same as "password"!!');
+        }
+      },
+    },
     phoneNumber: {
       type: String,
       minlength: 10,
