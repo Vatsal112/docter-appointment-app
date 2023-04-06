@@ -3,6 +3,7 @@ const cors = require("cors");
 const config = require("./configs/config");
 const userRouter = require("./routes/user");
 const docRouter = require("./routes/docter");
+const appointmentRouter = require("./routes/appointment");
 require("./db/mongoose");
 class AppointmentBookingSystem {
   port;
@@ -40,6 +41,7 @@ class AppointmentBookingSystem {
   initializeRoutes() {
     this.app.use("/v1", userRouter);
     this.app.use("/v1", docRouter);
+    this.app.use("/v1", appointmentRouter);
     this.app.use("/", (req, res, next) => {
       res
         .status(200)

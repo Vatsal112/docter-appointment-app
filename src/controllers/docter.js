@@ -1,6 +1,7 @@
 const {
   docterRegisterService,
   docterLoginService,
+  addDocterUnavailabilityService,
 } = require("../services/docter");
 
 const docterRegisterController = async (req, res, next) => {
@@ -13,4 +14,13 @@ const docterLoginController = async (req, res, next) => {
   res.status(response?.status).send(response);
 };
 
-module.exports = { docterRegisterController, docterLoginController };
+const addDocterUnavailabilityController = async (req, res, next) => {
+  const response = await addDocterUnavailabilityService(req.body);
+  res.status(response?.status).send(response);
+};
+
+module.exports = {
+  docterRegisterController,
+  docterLoginController,
+  addDocterUnavailabilityController,
+};

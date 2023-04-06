@@ -1,5 +1,6 @@
 const config = require("../configs/config");
 const Docter = require("../models/docterModel");
+const UnAvailability = require("../models/unAvailablity");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
@@ -71,4 +72,24 @@ const docterLoginService = async (params) => {
   }
 };
 
-module.exports = { docterRegisterService, docterLoginService };
+const addDocterUnavailabilityService = async (params) => {
+  try {
+    const res = new UnAvailability(params);
+    const data = await res.save();
+    return {
+      status: 200,
+      data: data,
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      message: error,
+    };
+  }
+};
+
+module.exports = {
+  docterRegisterService,
+  docterLoginService,
+  addDocterUnavailabilityService,
+};

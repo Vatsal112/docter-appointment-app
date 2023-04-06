@@ -58,8 +58,23 @@ const docterSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    timings: {
+    unAvailablityDayIds: {
       type: Array,
+    },
+    serviceStartTime: {
+      type: String,
+      required: true,
+    },
+    serviceEndTime: {
+      type: String,
+      required: true,
+    },
+    serviceBreakTimeStart: {
+      type: String,
+      required: true,
+    },
+    serviceBreakTimeEnd: {
+      type: String,
       required: true,
     },
     status: {
