@@ -80,4 +80,30 @@ const addAppointmentService = async (params) => {
   }
 };
 
-module.exports = { addAppointmentService };
+const cancelAppointmentService = async (id) => {
+  try {
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return {
+        status: 400,
+        message: "Appointment not found",
+      };
+    }
+
+    await Appointment.findByIdAndUpdate(id, {
+      status: "cancelled",
+    });
+
+    return {
+      status: 200,
+      message: "Appointment cancelled successfully",
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      message: error,
+    };
+  }
+};
+
+module.exports = { addAppointmentService, cancelAppointmentService };
