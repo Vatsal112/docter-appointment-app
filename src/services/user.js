@@ -1,5 +1,6 @@
 const config = require("../configs/config");
 const User = require("../models/userModel");
+const Docter = require("../models/docterModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const registerService = async (params) => {
@@ -69,4 +70,78 @@ const loginService = async (params) => {
     };
   }
 };
-module.exports = { registerService, loginService };
+
+const docterSearchService = async (params) => {
+  try {
+    const search = [];
+    if (params.area) {
+      search.push({
+        "address.area": params?.area,
+      });
+    } else if (params.line) {
+      search.push({
+        "address.line-1": params?.line,
+      });
+    } else if (params.city) {
+      search.push({
+        "address.city": params?.city,
+      });
+    } else if (params.pincode) {
+      search.push({
+        "address.pincode": params?.pincode,
+      });
+    } else if (params.specialty) {
+      search.push({
+        specialization: params?.specialty,
+      });
+    }
+    const data = await Docter.find({
+      $and: search,
+    });
+    if (data.length > 0) {
+      return {
+        status: 200,
+        data: data,
+      };
+    } else {
+      return {
+        status: 400,
+        message: "No docters found",
+      };
+    }
+  } catch (error) {
+    return {
+      status: 500,
+      message: error,
+    };
+  }
+};
+
+const getUserService = async (id) => {
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      return {
+        status: 404,
+        message: "Something went wrong while getting user",
+      };
+    }
+
+    return {
+      status: 200,
+      data: user,
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      message: error,
+    };
+  }
+};
+module.exports = {
+  registerService,
+  loginService,
+  docterSearchService,
+  getUserService,
+};

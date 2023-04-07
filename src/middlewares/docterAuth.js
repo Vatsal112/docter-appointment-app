@@ -18,6 +18,7 @@ const docAuth = async (req, res, next) => {
 
     req.user = user;
     req.token = token;
+    req.id = user._id;
     next();
   } catch (e) {
     res.status(401).send({ error: "Unauthorized" });

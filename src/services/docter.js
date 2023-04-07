@@ -88,8 +88,30 @@ const addDocterUnavailabilityService = async (params) => {
   }
 };
 
+const getDocterService = async (id) => {
+  try {
+    const doc = await Docter.findById(id);
+    if (!doc) {
+      return {
+        status: 400,
+        message: "Something went wrong while getting docter data",
+      };
+    }
+    return {
+      status: 200,
+      data: doc,
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      message: error,
+    };
+  }
+};
+
 module.exports = {
   docterRegisterService,
   docterLoginService,
   addDocterUnavailabilityService,
+  getDocterService,
 };
