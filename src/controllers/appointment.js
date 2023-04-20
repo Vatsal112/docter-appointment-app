@@ -1,6 +1,7 @@
 const {
   addAppointmentService,
   cancelAppointmentService,
+  getAvailableSlots,
 } = require("../services/appointment");
 
 const addAppointmentController = async (req, res) => {
@@ -13,4 +14,13 @@ const cancelAppointmentController = async (req, res) => {
   res.status(response.status).send(response);
 };
 
-module.exports = { addAppointmentController, cancelAppointmentController };
+const getAvailableSlotsController = async (req, res) => {
+  const response = await getAvailableSlots(req.body);
+  res.status(response.status).send(response);
+};
+
+module.exports = {
+  addAppointmentController,
+  cancelAppointmentController,
+  getAvailableSlotsController,
+};

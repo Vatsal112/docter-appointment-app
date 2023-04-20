@@ -28,50 +28,19 @@ const addAppointmentService = async (params) => {
       address: userInfo.address,
       age: userInfo.age,
     };
-    const checkDocAvailability = await Unavailablity.find({
-      doctorId: params.doctorId,
-    });
-
-    if (checkDocAvailability) {
-      for (let i = 0; i < checkDocAvailability.length; i++) {
-        if (checkDocAvailability[i].unAvailablityDate === params.date) {
-          if (
-            checkDocAvailability[i].unAvailablityTimeFrom > params.time.from &&
-            checkDocAvailability[i].unAvailablityTimeTo < params.time.to
-          ) {
-            const appointment = new Appointment(params);
-            const data = await appointment.save();
-            return {
-              status: 200,
-              data: data,
-            };
-          } else if (
-            checkDocAvailability[i].unAvailablityTimeFrom < params.time.from &&
-            checkDocAvailability[i].unAvailablityTimeTo > params.time.to
-          ) {
-            const appointment = new Appointment(params);
-            const data = await appointment.save();
-            return {
-              status: 200,
-              data: data,
-            };
-          } else {
-            return {
-              status: 400,
-              message:
-                "Doctor is not available in this time slot. Please choose different time slot",
-            };
-          }
-        } else {
-          const appointment = new Appointment(params);
-          const data = await appointment.save();
-          return {
-            status: 200,
-            data: data,
-          };
-        }
-      }
+    params.status = params.status ? params.status : "pending";
+    const appointment = new Appointment(params);
+    const res = await appointment.save();
+    if (!res) {
+      return {
+        status: 400,
+        message: "Something went wrong saving appointment",
+      };
     }
+    return {
+      status: 200,
+      data: res,
+    };
   } catch (error) {
     return {
       status: 500,
@@ -106,4 +75,69 @@ const cancelAppointmentService = async (id) => {
   }
 };
 
-module.exports = { addAppointmentService, cancelAppointmentService };
+const getAvailableSlots = async (params) => {
+  try {
+    const docInfo = await Docter.findOne({ _id: params.doctorId });
+    const checkDocAvailability = await Unavailablity.find({
+      doctorId: params.doctorId,
+    });
+
+    if (checkDocAvailability) {
+      for (let i = 0; i < checkDocAvailability.length; i++) {
+        if (checkDocAvailability[i].unAvailablityDate === params.date) {
+          if (
+            checkDocAvailability[i].unAvailablityTimeFrom >= params.time.from &&
+            checkDocAvailability[i].unAvailablityTimeTo <= params.time.to
+          ) {
+            return {
+              status: 400,
+              message: `Appointment is not available at this time slot, you can book a slot before ${checkDocAvailability[i].unAvailablityTimeFrom} or after ${checkDocAvailability[i].unAvailablityTimeTo}`,
+            };
+          } else if (
+            checkDocAvailability[i].unAvailablityTimeFrom <= params.time.from &&
+            checkDocAvailability[i].unAvailablityTimeTo >= params.time.to
+          ) {
+            return {
+              status: 400,
+              message: `Appointment is not available at this time slot, you can book a slot after ${checkDocAvailability[i].unAvailablityTimeFrom}`,
+            };
+          } else if (
+            (checkDocAvailability[i].unAvailablityTimeFrom >=
+              params.time.from &&
+              checkDocAvailability[i].unAvailablityTimeTo >= params.time.to) ||
+            (checkDocAvailability[i].unAvailablityTimeFrom <=
+              params.time.from &&
+              checkDocAvailability[i].unAvailablityTimeTo <= params.time.to)
+          ) {
+            return {
+              status: 200,
+              data: docInfo,
+            };
+          } else {
+            return {
+              status: 400,
+              message:
+                "Doctor is not available in this time slot. Please choose different time slot",
+            };
+          }
+        } else {
+          return {
+            status: 200,
+            data: docInfo,
+          };
+        }
+      }
+    }
+  } catch (error) {
+    return {
+      status: 500,
+      message: error,
+    };
+  }
+};
+
+module.exports = {
+  addAppointmentService,
+  cancelAppointmentService,
+  getAvailableSlots,
+};
